@@ -32,7 +32,7 @@ class GitUtilsTests {
         GitUtils.gitClone(
             Path.of("target"),
             repoUrl,
-            "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",
+            "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",
             "ID_TEST");
 
     FileUtils4Test.deleteOnExit(repoDir);
