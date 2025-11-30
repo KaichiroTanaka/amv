@@ -29,6 +29,8 @@
     icon: typeof IconType;
   };
 
+  const baseUrl = env.PUBLIC_BACKEND_URL || new URL(window.location.href).origin;
+
   const menuItems: MenuItem[] = [
     { id: 'top', name: 'Top', href: '/', icon: House },
     { id: 'type', name: 'Types', href: '/types', icon: FileType },
@@ -44,10 +46,10 @@
     {
       id: 'internal-db',
       name: 'Internal DB',
-      href: `${env.PUBLIC_BACKEND_URL}/h2`,
+      href: `${baseUrl}/h2`,
       icon: Database
     },
-    { id: 'api', name: 'API', href: `${env.PUBLIC_BACKEND_URL}/q/swagger-ui/`, icon: Braces }
+    { id: 'api', name: 'API', href: `${baseUrl}/q/swagger-ui/`, icon: Braces }
   ];
 </script>
 

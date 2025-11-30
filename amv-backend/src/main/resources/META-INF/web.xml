@@ -7,6 +7,10 @@
   <servlet>
     <servlet-name>h2-console</servlet-name>
     <servlet-class>org.h2.server.web.JakartaWebServlet</servlet-class>
+    <init-param>
+      <param-name>webAllowOthers</param-name>
+      <param-value>true</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
