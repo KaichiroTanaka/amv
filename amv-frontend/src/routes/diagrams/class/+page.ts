@@ -8,18 +8,29 @@ export const load: PageLoad = async ({ fetch, url }) => {
     ...CriteriaUtils.decode(url)
   } as TypeSearchCriteriaModel;
 
-  const result =
-    (await ApiHandler.handle<TypeSearchResultModel>(fetch, (api) => api.type.search(criteria))) ||
-    ({} as TypeSearchResultModel);
+  const fromLink = url.searchParams.get('fromLink') === '1';
 
-  const classDiagram =
-    result.list && result.list!.length === 1
-      ? (await ApiHandler.handle<string>(fetch, (api) =>
+  let result: TypeSearchResultModel = { list: [] };
+  let classDiagram = '';
+
+  const hasCriteria = criteria.text && criteria.text.trim().length >= 2;
+
+  if (hasCriteria) {
+    result = (await ApiHandler.handle<TypeSearchResultModel>(fetch, (api) =>
+      api.type.search(criteria)
+    )) || { list: [] };
+
+    if ((result.list && result.list.length === 1) || fromLink) {
+      const target = fromLink && criteria.text ? criteria.text : result.list![0].qualifiedName!;
+
+      classDiagram =
+        (await ApiHandler.handle<string>(fetch, (api) =>
           api.diagrams.classDiagram({
-            qualifiedName: result.list![0].qualifiedName!
+            qualifiedName: target
           })
-        )) || ''
-      : '';
+        )) || '';
+    }
+  }
 
   return {
     criteria,
