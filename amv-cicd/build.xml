@@ -67,7 +67,7 @@
     </exec>
 
     <exec executable="${mvn.cmd}" dir="${prjdir}" failonerror="true">
-      <arg line="-P push-image" />
+      <arg line="-f amv-backend -P push-image" />
     </exec>
 
     <if>
