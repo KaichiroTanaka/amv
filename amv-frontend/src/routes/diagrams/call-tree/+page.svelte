@@ -3,6 +3,7 @@
   import type { CallTreeCriteriaModel, CallTreeElementModel } from '$lib/arch/api/Api';
   import CheckBox from '$lib/arch/form/CheckBox.svelte';
   import CriteriaUtils from '$lib/arch/search/CriteriaUtils';
+  import type { CriteriaModel } from './+page';
   import { ScrollText, Search } from '@lucide/svelte';
   import type { PageProps } from './$types';
   import ToCallTree from '$lib/domain/diagrams/ToCallTree.svelte';
@@ -10,23 +11,26 @@
   import { m } from '$lib/paraglide/messages';
 
   let { data }: PageProps = $props();
-  let { callTrees } = $derived(data);
-  let { signaturePattern, callTreeRequired, calledTreeRequired } = $state(data.criteria);
-  let showExternalPackage = $state(data.showExternalPackage);
-  let packageLevel = $state(data.packageLevel);
+  let { criteria: _criteria, methods, callTrees } = $derived(data);
+  // svelte-ignore state_referenced_locally
+  let criteria = $state(_criteria);
+  let showExternalPackage = $state(true);
+  let packageLevel = $state(3);
 
   $effect(() => {
-    search({
-      signaturePattern,
-      callTreeRequired,
-      calledTreeRequired
-    });
+    criteria = _criteria;
   });
 
-  // const form = FormValidator.createForm({}, search);
+  $effect(() => {
+    search(criteria);
+  });
 
-  async function search(criteria: CallTreeCriteriaModel) {
+  async function search(criteria: CriteriaModel) {
     await goto(CriteriaUtils.encode(criteria));
+  }
+
+  function url(qualifiedSignature: string | undefined) {
+    return CriteriaUtils.encode({ methodCriteria: { text: qualifiedSignature } });
   }
 
   function isInternalPackage(element: CallTreeElementModel, level: number): boolean {
@@ -40,8 +44,25 @@
 
 <section class="container">
   <!-- svelte-ignore a11y_autofocus -->
-  <input id="search" type="search" bind:value={signaturePattern} autofocus />
+  <input id="search" type="search" bind:value={criteria.methodCriteria.text} autofocus />
 </section>
+
+{#if methods.list && methods.list!.length > 1}
+  {@const andMoreCount = methods.pageResult!.count! - methods.list.length}
+  <ul>
+    {#each methods.list as method}
+      <li>
+        <a href={url(method.qualifiedSignature)}>{method.qualifiedSignature}</a>
+      </li>
+    {/each}
+
+    {#if andMoreCount > 0}
+      <li>
+        ... and {andMoreCount} more
+      </li>
+    {/if}
+  </ul>
+{/if}
 
 {#if callTrees.length > 0}
   <section>
@@ -71,8 +92,16 @@
   {@const method = callTree.method}
 
   <section class="container-fluid setting">
-    <CheckBox id="call-tree" label={m.callTree()} bind:checked={callTreeRequired} />
-    <CheckBox id="called-tree" label={m.calledTree()} bind:checked={calledTreeRequired} />
+    <CheckBox
+      id="call-tree"
+      label={m.callTree()}
+      bind:checked={criteria.callTreeCriteria.callTreeRequired}
+    />
+    <CheckBox
+      id="called-tree"
+      label={m.calledTree()}
+      bind:checked={criteria.callTreeCriteria.calledTreeRequired}
+    />
     <InputField
       id="internal-package-level"
       label={m.internalPackageLevel()}
@@ -97,16 +126,26 @@
       {method.qualifiedSignature}
     </p>
 
+<<<<<<< HEAD
     {#if callTreeRequired}
       <h4>{m.callTree()}</h4>
+=======
+    {#if criteria.callTreeCriteria.callTreeRequired}
+      <h4>Call Tree</h4>
+>>>>>>> upstream/main
 
       {#each callTree.callTree as e}
         {@render element(e)}
       {/each}
     {/if}
 
+<<<<<<< HEAD
     {#if calledTreeRequired}
       <h4>{m.calledTree()}</h4>
+=======
+    {#if criteria.callTreeCriteria.calledTreeRequired}
+      <h4>Called Tree</h4>
+>>>>>>> upstream/main
 
       {#each callTree.calledTree as e}
         {@render element(e)}
@@ -160,12 +199,7 @@
           <ScrollText />
         </a>
 
-        <ToCallTree
-          signaturePattern={method.qualifiedSignature}
-          onclick={() => {
-            signaturePattern = method.qualifiedSignature;
-          }}
-        />
+        <ToCallTree signaturePattern={method.qualifiedSignature} />
       {/if}
     </div>
   {/if}
