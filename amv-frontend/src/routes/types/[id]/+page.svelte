@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { PageProps } from './$types';
   import { ScrollText, TriangleAlert } from '@lucide/svelte';
+  import * as m from '$lib/paraglide/messages';
 
   let { data }: PageProps = $props();
   const type = data.type;
@@ -24,28 +25,30 @@
       }
     }
   };
+
+  const isJapanese = navigator.language.startsWith('ja');
 </script>
 
 <svelte:window on:hashchange={openDetailsFromHash} />
 
 <!-- TODO: add a link to source -->
 <article>
-  <h2>Unsolved Status</h2>
+  <h2>{m.unsolvedStatus()}</h2>
 
   <label for="analysis-progress">
-    Unsolved Rate: {unsolvedRate}% (Unsolved Count: {unsolvedCnt})
+    {m.unsolvedRate()}: {unsolvedRate}% ({m.unsolvedCount()}: {unsolvedCnt})
   </label>
   <progress id="analysis-progress" value={unsolvedRate} max="100"></progress>
 </article>
 
 <article>
-  <h2>Field Summary</h2>
+  <h2>{m.fieldSummary()}</h2>
 
   <table class="list striped fixed-col-tbl">
     <thead>
       <tr>
-        <th>Field Type</th>
-        <th>Field Name</th>
+        <th>{m.fieldType()}</th>
+        <th>{m.fieldName()}</th>
       </tr>
     </thead>
     <tbody>
@@ -60,14 +63,14 @@
 </article>
 
 <article>
-  <h2>Method Summary</h2>
+  <h2>{m.methodSummary()}</h2>
 
   <table class="list striped fixed-col-tbl">
     <thead>
       <tr>
-        <th>Return Type</th>
-        <th>Method Signature</th>
-        <th>Additional Info</th>
+        <th>{m.returnType()}</th>
+        <th>{m.methodSignature()}</th>
+        <th>{m.additionalInfo()}</th>
       </tr>
     </thead>
     <tbody>
@@ -102,7 +105,7 @@
 </article>
 
 <article>
-  <h2>Method Detail</h2>
+  <h2>{m.methodDetail()}</h2>
   {#each type.methods as method}
     <article>
       <header id={method.simpleSignature}>
@@ -120,7 +123,11 @@
 
       {#each method.calls as call}
         <div style="margin-left: 20px;" class="accordion-row">
-          L.{call.lineNo}
+          {#if isJapanese}
+            {call.lineNo}{m.line()}
+          {:else}
+            {m.line()}{call.lineNo}
+          {/if}
           <strong>Call:</strong>
           {#if call.qualifiedSignature}
             {call.qualifiedSignature}

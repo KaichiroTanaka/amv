@@ -7,6 +7,7 @@
   import type { PageProps } from './$types';
   import ToCallTree from '$lib/domain/diagrams/ToCallTree.svelte';
   import InputField from '$lib/arch/form/InputField.svelte';
+  import { m } from '$lib/paraglide/messages';
 
   let { data }: PageProps = $props();
   let { callTrees } = $derived(data);
@@ -45,23 +46,22 @@
 {#if callTrees.length > 0}
   <section>
     <article>
-      The font of each element in the Call Tree has the following meanings:
+      {m.callTreeLegend()}
       <div>
-        <span class="internal">Call</span>
-        <span>: Method within target internal package level</span>
+        <span class="internal">{m.call()}</span>
+        <span>: {m.internalCallDescription()}</span>
       </div>
       <div>
-        <span class="data">Call</span>
-        <span>: Class that holds data such as a Dto, an Entity or their Builder ("Data Class")</span
-        >
+        <span class="data">{m.call()}</span>
+        <span>: {m.dataClassDescription()}</span>
       </div>
       <div>
-        <span class="setter">Call</span>
-        <span class="notation-label">: Setter method of Data Class</span>
+        <span class="setter">{m.call()}</span>
+        <span class="notation-label">: {m.setterDescription()}</span>
       </div>
       <div>
-        <span class="getter">Call</span>
-        <span>: Getter method of Data Class</span>
+        <span class="getter">{m.call()}</span>
+        <span>: {m.getterDescription()}</span>
       </div>
     </article>
   </section>
@@ -71,11 +71,11 @@
   {@const method = callTree.method}
 
   <section class="container-fluid setting">
-    <CheckBox id="call-tree" label="Call Tree" bind:checked={callTreeRequired} />
-    <CheckBox id="called-tree" label="Called Tree" bind:checked={calledTreeRequired} />
+    <CheckBox id="call-tree" label={m.callTree()} bind:checked={callTreeRequired} />
+    <CheckBox id="called-tree" label={m.calledTree()} bind:checked={calledTreeRequired} />
     <InputField
       id="internal-package-level"
-      label="Internal Package Level"
+      label={m.internalPackageLevel()}
       labelPos="after"
       type="number"
       min="1"
@@ -84,7 +84,7 @@
     />
     <CheckBox
       id="show-external-package"
-      label="Show External Package Methods"
+      label={m.showExternalPackageMethods()}
       bind:checked={showExternalPackage}
     />
   </section>
@@ -93,12 +93,12 @@
     <h3>{method.type}.{method.simpleSignature}</h3>
 
     <p>
-      <strong>Qualified Signature:</strong>
+      <strong>{m.qualifiedSignature()}:</strong>
       {method.qualifiedSignature}
     </p>
 
     {#if callTreeRequired}
-      <h4>Call Tree</h4>
+      <h4>{m.callTree()}</h4>
 
       {#each callTree.callTree as e}
         {@render element(e)}
@@ -106,7 +106,7 @@
     {/if}
 
     {#if calledTreeRequired}
-      <h4>Called Tree</h4>
+      <h4>{m.calledTree()}</h4>
 
       {#each callTree.calledTree as e}
         {@render element(e)}
