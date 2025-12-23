@@ -67,7 +67,7 @@
 {#if callTrees.length > 0}
   <section>
     <article>
-      {m.callTreeLegend()}
+      {m.callHierarchyLegend()}
       <div>
         <span class="internal">{m.call()}</span>
         <span>: {m.internalCallDescription()}</span>
@@ -94,12 +94,12 @@
   <section class="container-fluid setting">
     <CheckBox
       id="call-tree"
-      label={m.callTree()}
+      label={m.callHierarchy()}
       bind:checked={criteria.callTreeCriteria.callTreeRequired}
     />
     <CheckBox
       id="called-tree"
-      label={m.calledTree()}
+      label={m.calledHierarchy()}
       bind:checked={criteria.callTreeCriteria.calledTreeRequired}
     />
     <InputField
@@ -126,26 +126,16 @@
       {method.qualifiedSignature}
     </p>
 
-<<<<<<< HEAD
-    {#if callTreeRequired}
-      <h4>{m.callTree()}</h4>
-=======
     {#if criteria.callTreeCriteria.callTreeRequired}
-      <h4>Call Tree</h4>
->>>>>>> upstream/main
+      <h4>{m.callHierarchy()}</h4>
 
       {#each callTree.callTree as e}
         {@render element(e)}
       {/each}
     {/if}
 
-<<<<<<< HEAD
-    {#if calledTreeRequired}
-      <h4>{m.calledTree()}</h4>
-=======
     {#if criteria.callTreeCriteria.calledTreeRequired}
-      <h4>Called Tree</h4>
->>>>>>> upstream/main
+      <h4>{m.calledHierarchy()}</h4>
 
       {#each callTree.calledTree as e}
         {@render element(e)}
