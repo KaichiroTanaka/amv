@@ -25,8 +25,6 @@
       }
     }
   };
-
-  const isJapanese = navigator.language.startsWith('ja');
 </script>
 
 <svelte:window on:hashchange={openDetailsFromHash} />
@@ -123,12 +121,8 @@
 
       {#each method.calls as call}
         <div style="margin-left: 20px;" class="accordion-row">
-          {#if isJapanese}
-            {call.lineNo}{m.line()}
-          {:else}
-            {m.line()}{call.lineNo}
-          {/if}
-          <strong>{m.call()}:</strong>
+          L.{call.lineNo}
+          <strong>Call:</strong>
           {#if call.qualifiedSignature}
             {call.qualifiedSignature}
             <a
