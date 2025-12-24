@@ -37,6 +37,12 @@ export interface CallTreeElementModel {
   methodTags: string[];
 }
 
+export interface ClassDiagramCriteriaModel {
+  qualifiedSignature: string;
+  /** @format int32 */
+  depth: number;
+}
+
 export interface CodebaseModel {
   id: string;
   name?: string;
@@ -110,6 +116,8 @@ export interface FieldDtoId {
 export interface InteractionDocumentCriteriaModel {
   qualifiedSignature: string;
   participableStereotypes: string[];
+  /** @format int32 */
+  depth: number;
 }
 
 export interface InteractionResponseModel {
@@ -139,6 +147,8 @@ export interface MethodModel {
   qualifiedSignature?: string;
   simpleSignature?: string;
   unsolvedReason?: string;
+  /** @format int32 */
+  lineNo?: number;
   srcUrl?: string;
   dummy: boolean;
   /** @uniqueItems true */
@@ -231,7 +241,9 @@ export interface TypeModel {
   /** @format int32 */
   unsolvedCnt?: number;
   unsolvedRate?: number;
+  /** @uniqueItems true */
   fields: FieldModel[];
+  /** @uniqueItems true */
   methods: MethodModel[];
   sourceFile: SourceFileModel;
   /** @format int64 */
@@ -301,7 +313,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8081";
+  public baseUrl: string = "http://localhost:8080";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -496,7 +508,7 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title amv-backend API
  * @version 1.0-SNAPSHOT
- * @baseUrl http://localhost:8081
+ * @baseUrl http://localhost:8080
  */
 export class Api<
   SecurityDataType extends unknown,
@@ -674,18 +686,18 @@ export class Api<
      * @tags Diagram Controller
      * @name ClassDiagram
      * @summary Class Diagram
-     * @request GET:/api/diagrams/class
+     * @request POST:/api/diagrams/class
      */
     classDiagram: (
-      query?: {
-        qualifiedName?: string;
-      },
+      data: ClassDiagramCriteriaModel,
       params: RequestParams = {}
     ) =>
-      this.request<string, any>({
+      this.request<DiagramModel, void>({
         path: `/api/diagrams/class`,
-        method: "GET",
-        query: query,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
